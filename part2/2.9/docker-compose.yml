@@ -1,0 +1,47 @@
+version: '3.5'
+
+services: 
+
+    backend-example:
+        build: ./backend
+        container_name: backend_example
+        ports: 
+            - 8000:8000
+        environment: 
+            - REDIS=redis
+            - DB_USERNAME=postgres
+            - DB_PASSWORD=salis123
+            - DB_HOST=db
+            
+    frontend-example:
+        build: ./frontend
+        container_name: frontend_example
+        ports:
+            - 5000:5000
+        links:
+            - backend-example
+
+    redis:
+        image: redis
+        container_name: redis
+
+    db:
+        image: postgres
+        environment: 
+            - POSTGRES_PASSWORD=salis123
+        container_name: db_26
+        volumes:
+            - ./database:/var/lib/postgresql/data
+
+    nginx:
+        image: nginx
+        container_name: nginx
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf:ro
+        ports:
+            - 80:80
+        links:
+            - backend-example
+
+volumes:
+    database:
